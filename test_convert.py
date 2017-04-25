@@ -1,22 +1,18 @@
 from PIL import Image
-
+import struct
 
 def main():
+        f = open('new_img.bin','wb')
+        img = Image.open('eye_test_image1.jpg')
 
-	print "Hello mars"
+        img.show()
 
-	f = open('new_img.bin','w')
-	img = Image.open('eye_image_test1.jpg')
-	
-	#img.getPixel((0,0))
-
-	height = img.height
-	width = img.width
-
-
-	for i in height:
-		for j in width:
-			pixel=img.getPixel((i,j))
-			f.write(pixel + '\n')
-	f.close
+        height = img.height
+        width = img.width
+        for i in range(height):
+                for j in range(width):
+                        pixel=img.getpixel((j,i))
+                        pixel_byte = struct.pack("f",float(pixel))
+                        f.write(pixel_byte)
+        f.close()
 main()
