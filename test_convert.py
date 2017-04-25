@@ -2,8 +2,10 @@ from PIL import Image
 import struct
 
 def main():
-        f = open('new_img.bin','wb')
-        img = Image.open('eye_test_image1.jpg')
+        print("Enter file name!")
+        filename = input()
+        f = open("out.bin",'wb')
+        img = Image.open(filename)
 
         img.show()
 
@@ -15,4 +17,5 @@ def main():
                         pixel_byte = struct.pack("f",float(pixel))
                         f.write(pixel_byte)
         f.close()
+        print("height => {} width => {}".format(height, width))
 main()
