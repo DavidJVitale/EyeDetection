@@ -1,31 +1,22 @@
-print("Enter File Name...")
-file_name=input()
-
-print("Starting Program...\n-----\n")
-
-from PIL import Image
-
 import struct
 import subprocess
 import sys
 
-f = open("out.bin",'wb')
-img = Image.open(file_name)
-height = img.height
-width = img.width
-for i in range(height):
-    for j in range(width):
-        pixel=img.getpixel((j,i))
-        pixel_byte = struct.pack("f",float(pixel))
-        f.write(pixel_byte)
+print("Enter filename")
+filename=input()
 
-f.close()
+print("Enter width")
+width=input()
+
+print("Enter height")
+height=input()
+
 print("height => {} width => {}".format(height, width))
 
 
 print("Calling edge detection program")
 
-edge_out = subprocess.run([sys.executable, 'mock_edge_program.py', "out.bin"],
+edge_out = subprocess.run([sys.executable, 'mock_edge_program.py', filename],
 			   shell=True,
 			   stdout=subprocess.PIPE)
 
