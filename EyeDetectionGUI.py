@@ -76,7 +76,7 @@ def startFilterCB():
     
     binary_path = input_path + ".bin"
     
-    edge_out = subprocess.run([sys.executable, 'mock_edge_program.py', binary_path],
+    edge_out = subprocess.run("pupil-detect-phase-II-master\\Project11.exe",
                 shell=True,
                 stdout=subprocess.PIPE)
 
