@@ -23,21 +23,43 @@ using namespace std;
 void printM(int ***data, int h, int w, int r);
 void initialize(int ***array, int height, int width, int range);
 void voting2(int ***array, int height, int width, int range, int image[12][13]);
-void voting(int ***array, int height, int width, int range, int **image);
-void threshold(int ***array, int height, int width, int range, int th);
-void th_range(int start, int end, int ***array, int height, int width, int range);
+void voting(int ***array, int height, int width, int minRad, int range, int **image);
+void threshold(int ***array, int height, int width, int minRad, int range, int th);
+void th_range(int start, int end, int ***array, int height, int width, int minRad, int range);
 void readImage(char* filename, int height, int width, int **image);
+void readImage2(int *, char *, int, int);
+
+
 
 int main(int argc, char** argv) 
 {
 	//error checking command line args
-	if (argc != 4)
+	if (argc != 6)
 	{
-		printf("Error: please enter 3 command line arguments %i\n", argc);
+		printf("Error: please enter 5 command line arguments %i\n", argc);
+		exit(EXIT_FAILURE);
 	}
-	int HEIGHT = 12;// atoi(argv[2]);
-	int WIDTH = 13;// atoi(argv[3]);
-	int RANGE = 5;
+//	int HEIGHT = 12;// atoi(argv[2]);
+//	int WIDTH = 13;// atoi(argv[3]);
+//	int RANGE = 2;
+//	int minRad = 30;
+
+//	int H = 90;
+//	int W = 100;
+	
+	char* filename = argv[1];
+	int H = atoi(argv[2]);
+	int W = atoi(argv[3]);
+	int minRad = atoi(argv[4]);
+	int maxRad = atoi(argv[5]);
+	int RANGE = maxRad - minRad;
+
+	cout << filename << "\r\n";
+	cout << H << "\r\n";
+	cout << W << "\r\n";
+	cout << minRad << "\r\n";
+	cout << maxRad << "\r\n";
+	cout << RANGE << "\r\n";
 
 	// Test image
 	int image[12][13] = {   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -53,47 +75,75 @@ int main(int argc, char** argv)
 				   			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 				   			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
-	char filename[] = "test.txt"; //argv[4];
+//	char filename[] = "test.txt"; //argv[4];
 	
 	// voting array
 	int ***data;
 	// Allocate memory
-	data = new int**[HEIGHT];  // layer 1
-	for (int i = 0; i < HEIGHT; ++i) 
+	data = new int**[H];  // layer 1
+	for (int i = 0; i < H; ++i) 
 	{  // layer 2
-		data[i] = new int*[WIDTH];
-		for (int j = 0; j < WIDTH; ++j)  // layer 3
+		data[i] = new int*[W];
+		for (int j = 0; j < W; ++j)  // layer 3
 		{
 			data[i][j] = new int[RANGE];
 		}
 	}
 
 	// MUST ADD MEMORY DEALLOCATION BEFORE UNCOMMENTING THIS
-//	int **image2;
-//	image2 = new int*[HEIGHT];  // layer 1
-//	for (int i = 0; i < HEIGHT; ++i) 
-//	{  // layer 2
-//		image2[i] = new int[WIDTH];
-//	}
+
+	int *binData = new int[W*H];
+	readImage2(binData, filename, W, H);
+
+	int **binImage;
+	binImage = new int*[H];  // layer 
+	for (int i = 0; i < H; ++i) 
+	{  // layer 2
+		binImage[i] = new int[W];
+	}
+
+	int count = 0;
+	for(int i = 0; i < H; i++)
+	{
+		for(int j = 0; j < W; j++)
+		{
+			if(binData[count] != 0)
+			{
+				binData[count] = 1;
+			}
+			binImage[i][j] = binData[count];
+			count++;
+		}
+	}
 
 	// Hough
-	initialize(data, HEIGHT, WIDTH, RANGE); // zero voting array
+	initialize(data, H, W, RANGE); // zero voting array
 	// readImage(filename, HEIGHT, WIDTH, image2); // read image from file
-	voting2(data, HEIGHT, WIDTH, RANGE, image); // vote
-	// printM(data, HEIGHT, WIDTH, RANGE); // optional debug printout
-	th_range(1, 9, data, HEIGHT, WIDTH, RANGE); // filter out the high scoring circles into files
 
+	//voting2(data, HEIGHT, WIDTH, RANGE, image); // vote
+         voting(data, H, W, minRad, RANGE, binImage);
+
+	// printM(data, HEIGHT, WIDTH, RANGE); // optional debug printout
+//	th_range(1, 9, data, HEIGHT, WIDTH, RANGE); // filter out the high scoring circles into files
+	th_range(1, 1000, data, H, W, minRad, RANGE);
 
 	// De-Allocate memory to prevent memory leak
-	for (int i = 0; i < HEIGHT; ++i) 
+	for (int i = 0; i < H; ++i) 
 	{
-		for (int j = 0; j < WIDTH; ++j)
+		for (int j = 0; j < W; ++j)
 		{
 			delete [] data[i][j];
 		}
 		delete [] data[i];
 	}
 	delete [] data;
+
+
+	for(int i = 0; i < H; ++i)
+	{
+		delete [] binImage[i];
+	}
+	delete [] binImage;
 
 	return 0;
 }
@@ -160,7 +210,7 @@ void voting2(int ***array, int height, int width, int range, int image[12][13])
 					initialize(lookup, height, width, range); // each time zero out the lookup table
 					for (int d = 0; d < maxDegree; d++)
 					{	
-						// possible circle center coordinates
+						// possible circ/thle center coordinates
 						a = x - (radius + MINRAD) * cos(d * PI / 180);
 						b = y - (radius + MINRAD) * sin(d *PI / 180);
 
@@ -191,7 +241,7 @@ void voting2(int ***array, int height, int width, int range, int image[12][13])
 }
 
 // use a threshold to print legible circles from voting array to a csv file
-void threshold(int ***array, int height, int width, int range, int th)
+void threshold(int ***array, int height, int width, int minRad, int range, int th)
 {
 	ofstream myfile;
 	char str[80];
@@ -212,7 +262,7 @@ void threshold(int ***array, int height, int width, int range, int th)
 				// TO DO : GET RID OF LAST LINE
 				if(array[i][j][k] >= th)
 				{
-					actual_radius = k + 1; // because starts at 0
+					actual_radius = k + minRad; // because starts at 0
 					myfile << i << "," << j << "," << actual_radius << "\n" << std::flush;
 				}
 			}
@@ -222,11 +272,11 @@ void threshold(int ***array, int height, int width, int range, int th)
 }
 
 // use the threshold() function for a range of values
-void th_range(int start, int end, int ***array, int height, int width, int range)
+void th_range(int start, int end, int ***array, int height, int width, int minRad, int range)
 {
 	for(int i = start; i <= end; i++) 
 	{
-		threshold(array, height, width, range, i);
+		threshold(array, height, width, minRad, range, i);
 	}
 }
 
@@ -234,9 +284,7 @@ void th_range(int start, int end, int ***array, int height, int width, int range
 void readImage(char* filename, int height, int width, int **image)
 {
 	ifstream myfile;
-	cout << "Reading image" << endl;
 	myfile.open(filename);
-	cout << "read file done";
 	for (int i = 0; i < height; i++)
 	{
 		for (int j = 0; j < width; j++)
@@ -247,11 +295,23 @@ void readImage(char* filename, int height, int width, int **image)
 		}
 	}
 	myfile.close();
-	cout << "done";
 }
 
+void readImage2(int *data, char * filename, int numRows, int numCols)
+{
+	ifstream infile;
+	infile.open(filename, ios::in|ios::binary);
+	if(infile.is_open())
+	{	
+		infile.read((char *)data, numRows*numCols*4);
+		infile.close();
+	}
+	else
+	{
+		cout << "Unable to open" << filename << " for reading\r\n";
+	}
 
-
+}
 
 
 
@@ -265,11 +325,11 @@ void readImage(char* filename, int height, int width, int **image)
 
 
 // copy of voting method
-void voting(int ***array, int width, int height, int range, int **image)
+void voting(int ***array, int width, int height, int minRad, int range, int **image)
 {
 	int a, b;
 	int maxDegree = 360;
-	int MINRAD = 1;
+	int MINRAD = minRad;
 	float PI = 3.1415926535897;
 	// lookup table for duplicate votes
 	int ***lookup;
@@ -285,10 +345,8 @@ void voting(int ***array, int width, int height, int range, int **image)
 	//cout << "voting";
 	
 	//printf("Done initializing params");
-
 	for (int y = 0; y < height; y++) //go through every row
 	{
-		printf("Int loop1");
 		for (int x = 0; x < width; x++) //go through every column
 		{
 			//printf("Int loop2");
@@ -306,14 +364,17 @@ void voting(int ***array, int width, int height, int range, int **image)
 						b = y - (radius + MINRAD) * sin(d *PI / 180);
 						//printf("\nsin and COS works!\n");
 						//cout << "\nvoting inner loop\n";
+						if((a + (radius+1)) >= width || (a - (radius+1)) < 0 || (b + (radius + 1)) >= height || (b - (radius+1)) < 0) { continue; } 
 						if(a < height && a > 0 && b < width && b > 0) // point noot out of bounds
 						{
+						//	cout << "a " << a << " b " << b << " radius " << radius << "\r\n";
 							if(lookup[a][b][radius] != 0) { /*printf("\nduplicate vote\n")*/;continue; } // do not vote twice per rafius
+						//	cout << "voted\r\n";
 							//printf("\nvote start\n");
 							array[a][b][radius]++;
 							//cout << "\nVOTED\n";
 							lookup[a][b][radius]++;
-							//printf("\nvote end\n");
+							//printf("\nvote end\n")
 						}
 						//printf("\n--------------------------------------------------got to end of loop 4\n");
 					}
@@ -332,3 +393,4 @@ void voting(int ***array, int width, int height, int range, int **image)
 	}
 	delete [] lookup;
 }
+
