@@ -17,6 +17,10 @@ global ResultLabel
 
 global CircleProp
 
+#global width and height
+width=-1
+height=-1
+
 # Global exit flag
 exit_flag = False
 
@@ -44,7 +48,7 @@ def read_CSV():
     global csv_buffer
     csvResult = ""
     
-    with open("th_7.csv", 'r') as csvfile:
+    with open("th_246.csv", 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         CircleProp[:] = []
         counter = 0
@@ -58,14 +62,18 @@ def read_CSV():
     ResultLabel.config(text = "<Circle Properties>\n\nX\tY\tR\n" + csvResult)
 
 def folderButtonCB():
-    global input_path
+    global input_path, width, height
     
     inputImageFullPath=filedialog.askopenfilename()
     print(inputImageFullPath)
     input_path = inputImageFullPath
     
     if(input_path.endswith(".jpg")):
-        newImg = ImageTk.PhotoImage(Image.open(input_path))
+        img = Image.open(input_path)
+        width = img.width
+        height = img.height
+        print("width => {} height => {}".format(width, height))
+        newImg = ImageTk.PhotoImage(img)
         inputImagePanel.configure(image = newImg)
         inputImagePanel.image = newImg
 
