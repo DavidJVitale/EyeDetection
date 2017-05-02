@@ -34,6 +34,7 @@ Image::Image(const Image &origIm)
 	//Copies the data from the original image object to the new object
 	for(int i = 0; i < (num_rows*num_cols); i++)
 	{
+		int j;
 		data[i] = origIm.data[i];
 	}
 }

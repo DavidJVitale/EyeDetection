@@ -17,13 +17,12 @@ int main(int argc, char* argv[])
 
 //        char readFile[] = "./images/lab5_spatial_image.bin";
 	char readFile[] = "eye_test_image1.jpg.bin"; //argv[1];
-        char writeFile[] = "outfile.bin"; //".\\images\\outfile.bin";
+    char writeFile[] = "outfile.bin"; //".\\images\\outfile.bin";
 
-        image1.readImage(readFile);
+    image1.readImage(readFile);
 
-        SobelFilter sobelfilter;
-        newImage = sobelfilter.process(image1,kernelDimension,kernelDimension,imageHeight,imageWidth);
+    SobelFilter sobelfilter;
+    newImage = sobelfilter.process(image1,kernelDimension,kernelDimension,imageHeight,imageWidth);
 
-        newImage.writeImage(writeFile);
-
+    newImage.writeImage(writeFile);
 }
