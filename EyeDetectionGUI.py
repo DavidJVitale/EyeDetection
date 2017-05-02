@@ -41,8 +41,8 @@ def read_CSV():
     global csv_buffer
     csvResult = ""
     
-    with open("output.csv", 'r') as csvfile:
-        reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+    with open("th_7.csv", 'r') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         CircleProp[:] = []
         counter = 0
         
@@ -86,9 +86,7 @@ def startFilterCB():
 
     print("\n-----\nCalling circle program...")
 
-    circ_out = subprocess.run([sys.executable, 'mock_circle_program.py', after_edge_file_name],
-                shell=True,
-                stdout=subprocess.PIPE)
+    circ_out = subprocess.run("Hough\\HoughFilter\\main.exe 1 2 3",shell=True,stdout=subprocess.PIPE)
 
     print("stdout of circle => {}".format(circ_out.stdout))
     print("reutnr code of circle => {}".format(circ_out.returncode))
