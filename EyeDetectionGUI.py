@@ -10,12 +10,14 @@ from tkinter import filedialog, messagebox
 import csv
 
 import subprocess
+import struct
 
 global input_path
 global inputImagePanel
 global outputImagePanel
 global ResultLabel
 
+from PIL import Image
 global CircleProp
 
 #global width and height
@@ -77,6 +79,19 @@ def folderButtonCB():
         newImg = ImageTk.PhotoImage(img)
         inputImagePanel.configure(image = newImg)
         inputImagePanel.image = newImg
+        
+        # Dynamically create binary file ===========
+        binary_path = input_path + ".bin"
+        name_without_path = os.path.basename(binary_path)
+        f = open(name_without_path,'wb')
+        
+        for i in range(height):
+                for j in range(width):
+                        pixel=img.getpixel((j,i))
+                        pixel_byte = struct.pack("f",float(pixel))
+                        f.write(pixel_byte)
+        f.close()
+        # ==========================================
 
         Tk.update(root)
             
