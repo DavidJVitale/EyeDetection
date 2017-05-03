@@ -2,6 +2,7 @@ import tkinter
 from tkinter import *
 
 import PIL
+import os
 from PIL import ImageTk, Image, ImageDraw
 
 from tkinter import filedialog, messagebox
@@ -84,7 +85,13 @@ def startFilterCB():
     
     binary_path = input_path + ".bin"
     
-    edge_out = subprocess.run("pupil-detect-phase-II-master\\Project11.exe",
+    name_without_path = os.path.basename(binary_path)
+    
+    print("filename = {}".format(name_without_path))
+    
+    edge_command = "pupil-detect-phase-II-master\\Project11.exe {} {} {}".format(name_without_path, height, width)
+    print("edge command => {}".format(edge_command))
+    edge_out = subprocess.run(edge_command,
                 shell=True,
                 stdout=subprocess.PIPE)
 
@@ -94,7 +101,9 @@ def startFilterCB():
 
     print("\n-----\nCalling circle program...")
 
-    circ_out = subprocess.run("Hough\\HoughFilter\\main.exe 1 2 3",shell=True,stdout=subprocess.PIPE)
+    hough_command = "Hough\\HoughFilter\\main.exe {} {} {} 30 31".format("out.bin", height, width)
+    print("hough_command = {}".format(hough_command))
+    circ_out = subprocess.run(hough_command,shell=True,stdout=subprocess.PIPE)
 
     print("stdout of circle => {}".format(circ_out.stdout))
     print("reutnr code of circle => {}".format(circ_out.returncode))
