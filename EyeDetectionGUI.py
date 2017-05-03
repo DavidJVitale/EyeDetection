@@ -32,6 +32,9 @@ outputimageLabel = None
 # image path
 input_path = None
 output_path = None
+MinRadius = None
+MaxRadius = None
+# Threshold = None
 
 # Labels for Properties of Circle
 ResultLabel = None
@@ -85,6 +88,7 @@ def startFilterCB():
     
     binary_path = input_path + ".bin"
     
+<<<<<<< HEAD
     name_without_path = os.path.basename(binary_path)
     
     print("filename = {}".format(name_without_path))
@@ -92,6 +96,10 @@ def startFilterCB():
     edge_command = "pupil-detect-phase-II-master\\Project11.exe {} {} {}".format(name_without_path, height, width)
     print("edge command => {}".format(edge_command))
     edge_out = subprocess.run(edge_command,
+=======
+    # TODO: arguments to Edge Detection - foo.jpg.bin Height Width
+    edge_out = subprocess.run("pupil-detect-phase-II-master\\Project11.exe {} {} {}",
+>>>>>>> f13cc4c4f0d27f949ab0449bcf7a11e89473d8a2
                 shell=True,
                 stdout=subprocess.PIPE)
 
@@ -101,16 +109,27 @@ def startFilterCB():
 
     print("\n-----\nCalling circle program...")
 
+<<<<<<< HEAD
     hough_command = "Hough\\HoughFilter\\main.exe {} {} {} 30 31".format("out.bin", height, width)
     print("hough_command = {}".format(hough_command))
     circ_out = subprocess.run(hough_command,shell=True,stdout=subprocess.PIPE)
+=======
+    # TODO: arguments to Hough Filter - out.bin Height Width
+    circ_out = subprocess.run("Hough\\HoughFilter\\main.exe 1 2 3",shell=True,stdout=subprocess.PIPE)
+>>>>>>> f13cc4c4f0d27f949ab0449bcf7a11e89473d8a2
 
     print("stdout of circle => {}".format(circ_out.stdout))
     print("reutnr code of circle => {}".format(circ_out.returncode))
 
     if(input_path.endswith(".jpg")):
         outputImageFullPath=outputFileEntry.get()   # in this path, create image with circles
+        MinRadius=MinRadiusEntry.get()   # Save MinRadius
+        MaxRadius=MaxRadiusEntry.get()   # Save MaxRadius
+        # Threshold=ThresholdEntry.get()   # Save ThresholdRadius
         print(outputImageFullPath)
+        print(MinRadius)
+        print(MaxRadius)
+        # print(Threshold)
         
         if(outputImageFullPath.endswith(".jpg")):
             
@@ -158,7 +177,7 @@ if __name__ == '__main__':
     FrameL = tkinter.Frame(root, width=200, height=300, background="bisque")
     FrameL.pack(side=LEFT)
    
-    title_L = Label(FrameL, text = "EYE DETECTION - AUTOGONI inc.", font=("Helvetica", 12))
+    title_L = Label(FrameL, text = "EYE DETECTION - AUTOGONI INC.", font=("Helvetica", 12))
     title_L.pack(pady=20, padx=20)
     
     folderButton = Button(FrameL, justify = LEFT, command = folderButtonCB)
@@ -170,8 +189,20 @@ if __name__ == '__main__':
     OpenFolderLabel.pack(side=TOP, pady=10, padx=10)
     
     outputFileEntry = Entry(FrameL, width=40)
-    outputFileEntry.insert(END, '<ENTER DESIRED OUTPUT FILE NAME>')
+    outputFileEntry.insert(END, 'OutputFileName.jpg')
     outputFileEntry.pack(side=TOP)
+    
+    MinRadiusEntry = Entry(FrameL, width=40)
+    MinRadiusEntry.insert(END, '<Enter Minimum Radius>')
+    MinRadiusEntry.pack(side=TOP)
+    
+    MaxRadiusEntry = Entry(FrameL, width=40)
+    MaxRadiusEntry.insert(END, '<Enter Maximum Radius>')
+    MaxRadiusEntry.pack(side=TOP)
+    
+    # ThresholdEntry = Entry(FrameL, width=40)
+    # ThresholdEntry.insert(END, '<Enter Threshold>')
+    # ThresholdEntry.pack(side=TOP)
 
     startButton = Button(FrameL, text = "Start Filter", justify = LEFT, command = startFilterCB)
     startButton.pack(side=TOP, pady=20, padx=20)
