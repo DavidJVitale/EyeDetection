@@ -32,9 +32,6 @@ outputimageLabel = None
 # image path
 input_path = None
 output_path = None
-MinRadius = None
-MaxRadius = None
-# Threshold = None
 
 # Labels for Properties of Circle
 ResultLabel = None
@@ -49,7 +46,7 @@ def read_CSV():
     global csv_buffer
     csvResult = ""
     
-    with open("out.csv", 'r') as csvfile:
+    with open("th_246.csv", 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         CircleProp[:] = []
         counter = 0
@@ -104,10 +101,7 @@ def startFilterCB():
 
     print("\n-----\nCalling circle program...")
 
-    MinRadius=MinRadiusEntry.get()   # Save MinRadius
-    MaxRadius=MaxRadiusEntry.get()   # Save MaxRadius
-    print("minRad => {} MaxRad => {}".format(MinRadius, MaxRadius))
-    hough_command = "Hough\\Hough.exe {} {} {} {} {}".format("out.bin", height, width, MinRadius, MaxRadius)
+    hough_command = "Hough\\HoughFilter\\main.exe {} {} {} 30 31".format("out.bin", height, width)
     print("hough_command = {}".format(hough_command))
     circ_out = subprocess.run(hough_command,shell=True,stdout=subprocess.PIPE)
 
@@ -116,11 +110,7 @@ def startFilterCB():
 
     if(input_path.endswith(".jpg")):
         outputImageFullPath=outputFileEntry.get()   # in this path, create image with circles
-        # Threshold=ThresholdEntry.get()   # Save ThresholdRadius
         print(outputImageFullPath)
-        print(MinRadius)
-        print(MaxRadius)
-        # print(Threshold)
         
         if(outputImageFullPath.endswith(".jpg")):
             
@@ -168,7 +158,7 @@ if __name__ == '__main__':
     FrameL = tkinter.Frame(root, width=200, height=300, background="bisque")
     FrameL.pack(side=LEFT)
    
-    title_L = Label(FrameL, text = "EYE DETECTION - AUTOGONI INC.", font=("Helvetica", 12))
+    title_L = Label(FrameL, text = "EYE DETECTION - AUTOGONI inc.", font=("Helvetica", 12))
     title_L.pack(pady=20, padx=20)
     
     folderButton = Button(FrameL, justify = LEFT, command = folderButtonCB)
@@ -180,20 +170,8 @@ if __name__ == '__main__':
     OpenFolderLabel.pack(side=TOP, pady=10, padx=10)
     
     outputFileEntry = Entry(FrameL, width=40)
-    outputFileEntry.insert(END, 'OutputFileName.jpg')
+    outputFileEntry.insert(END, '<ENTER DESIRED OUTPUT FILE NAME>')
     outputFileEntry.pack(side=TOP)
-    
-    MinRadiusEntry = Entry(FrameL, width=40)
-    MinRadiusEntry.insert(END, '<Enter Minimum Radius>')
-    MinRadiusEntry.pack(side=TOP)
-    
-    MaxRadiusEntry = Entry(FrameL, width=40)
-    MaxRadiusEntry.insert(END, '<Enter Maximum Radius>')
-    MaxRadiusEntry.pack(side=TOP)
-    
-    # ThresholdEntry = Entry(FrameL, width=40)
-    # ThresholdEntry.insert(END, '<Enter Threshold>')
-    # ThresholdEntry.pack(side=TOP)
 
     startButton = Button(FrameL, text = "Start Filter", justify = LEFT, command = startFilterCB)
     startButton.pack(side=TOP, pady=20, padx=20)
