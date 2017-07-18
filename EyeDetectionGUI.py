@@ -1,3 +1,6 @@
+#The main Eye Detection GUI that combines all parts into a functional GUI
+#Completed by David Vitale and members of the BIEN4290 class
+
 import tkinter
 from tkinter import *
 
