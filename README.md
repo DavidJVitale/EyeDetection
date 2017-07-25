@@ -2,7 +2,7 @@
 
 This application reads in a .jpg file of an eye, applies filters to the binary data in that image, and attempts to draw a circle over any detected pupils.
 
-![](http://i983.photobucket.com/albums/ae313/DavidJosephVitale/EyeDetection_zpselgakjiw.png)
+![](https://raw.githubusercontent.com/DavidJVitale/EyeDetection/master/pics/1.png)
 
 ## Technical Details
 
